@@ -1,0 +1,259 @@
+{
+  "schema_version": "1.0",
+  "type": "random_encounters",
+  "encounters": [
+    {
+      "encounter_id": "re_001",
+      "title": "버스 정류장 유품",
+      "trigger": {
+        "type": "random",
+        "weight": 1.0,
+        "blacklist_flags": []
+      },
+      "narrative": [
+        "늦은 밤 버스 정류장. 다음 버스까지 20분.",
+        "벤치 한쪽에 지갑 하나가 덩그러니 놓여 있다. 카드도 없고, 현금도 없다. 낡은 사진 한 장만 들어 있다 — 아이와 함께 찍은 것인데, 날짜가 없다."
+      ],
+      "choices_per_player": {
+        "player_A": [
+          {
+            "choice_id": "re001_a1",
+            "text": "(지갑을 손에 들고 잔향을 살핀다)",
+            "unlock": { "type": "stat", "stat": "령안", "min": 1 },
+            "result_narrative": "슬픔. 오래된 슬픔. 잃어버린 게 아니다 — 두고 간 거다.",
+            "effects": [
+              { "type": "stat_change", "stat": "오컬트_지식", "delta": 1, "recipient": "player_A" }
+            ]
+          },
+          {
+            "choice_id": "re001_a2",
+            "text": "사진을 자세히 들여다본다",
+            "unlock": null,
+            "result_narrative": "사진 속 아이는 6~7살쯤. 배경은 한강 어딘가. 사진 뒷면에 볼펜으로 희미하게 '다음엔 꼭'이라고 적혀 있다.",
+            "effects": [
+              {
+                "type": "give_item",
+                "item": {
+                  "item_id": "old_family_photo",
+                  "name": "낡은 가족사진",
+                  "description": "사진 뒷면에 '다음엔 꼭'이라고 적혀 있다."
+                },
+                "recipient": "player_A"
+              }
+            ]
+          },
+          {
+            "choice_id": "re001_a3",
+            "text": "그냥 지나친다",
+            "unlock": null,
+            "result_narrative": null,
+            "effects": []
+          }
+        ],
+        "player_B": [
+          {
+            "choice_id": "re001_b1",
+            "text": "(정류장 주변을 살핀다)",
+            "unlock": { "type": "stat", "stat": "탐색력", "min": 1 },
+            "result_narrative": "정류장 기둥 뒤에 봉투 하나가 테이프로 붙어 있다. 안에 쪽지: '찾는 사람은 연락 주세요' — 번호가 적혀 있다.",
+            "effects": [
+              {
+                "type": "give_item",
+                "item": {
+                  "item_id": "contact_note_re001",
+                  "name": "쪽지 (연락처)",
+                  "description": "버스 정류장 기둥 뒤에 붙어 있던 봉투 속 메모. 번호가 적혀 있다.",
+                  "flags_on_use": ["re001_contact_npc_unlocked"]
+                },
+                "recipient": "player_B"
+              }
+            ]
+          },
+          {
+            "choice_id": "re001_b2",
+            "text": "(근처 편의점 직원에게 물어본다)",
+            "unlock": { "type": "stat", "stat": "교섭력", "min": 1 },
+            "result_narrative": "직원: \"아, 그 지갑 며칠째예요. 주인이 다시 안 왔어요.\"",
+            "effects": [
+              { "type": "world_state", "key": "spiritual_activity_level", "delta": 1 }
+            ]
+          },
+          {
+            "choice_id": "re001_b3",
+            "text": "그냥 지나친다",
+            "unlock": null,
+            "result_narrative": null,
+            "effects": []
+          }
+        ]
+      }
+    },
+    {
+      "encounter_id": "re_002",
+      "title": "심야 골목 발소리",
+      "trigger": {
+        "type": "random",
+        "weight": 1.0,
+        "blacklist_flags": []
+      },
+      "narrative": [
+        "새벽 2시. 귀가 중 좁은 골목을 걷고 있다.",
+        "뒤에서 발소리가 들린다. 멈추면 소리도 멈춘다. 다시 걸으면 다시 들린다.",
+        "뒤를 돌아봐도 아무도 없다."
+      ],
+      "choices_per_player": {
+        "player_A": [
+          {
+            "choice_id": "re002_a1",
+            "text": "(멈춰서 뒤를 살핀다)",
+            "unlock": { "type": "stat", "stat": "령안", "min": 1 },
+            "result_narrative": "뭔가 있다. 형태는 없지만 — 그냥 지나가는 거다. 당신한테 관심 없다.",
+            "effects": [
+              { "type": "stat_change", "stat": "령안", "delta": 1, "recipient": "player_A" }
+            ]
+          },
+          {
+            "choice_id": "re002_a2",
+            "text": "(멈춰서 뒤를 향해 말을 건다)",
+            "unlock": { "type": "stat", "stat": "전투력", "min": 1 },
+            "result_narrative": "반응이 없다. 그냥 지나가는 거였다.",
+            "effects": []
+          },
+          {
+            "choice_id": "re002_a3",
+            "text": "발걸음을 빠르게 해서 골목을 빠져나간다",
+            "unlock": null,
+            "result_narrative": "빠져나오자 소리가 멈췄다. 아무 일도 없었던 것처럼.",
+            "effects": []
+          }
+        ],
+        "player_B": [
+          {
+            "choice_id": "re002_b1",
+            "text": "(골목 주변 지형을 살핀다)",
+            "unlock": { "type": "stat", "stat": "탐색력", "min": 1 },
+            "result_narrative": "골목 끝에 오래된 제단 흔적 같은 게 있다. 꽃이 놓여 있다. 오늘 것이다.",
+            "effects": [
+              {
+                "type": "give_item",
+                "item": {
+                  "item_id": "shrine_location_note",
+                  "name": "제단 위치 메모",
+                  "description": "심야 골목 끝에서 발견한 제단 위치. 꽃이 오늘 것이었다.",
+                  "flags_on_use": ["re002_shrine_location_known"]
+                },
+                "recipient": "player_B"
+              }
+            ]
+          },
+          {
+            "choice_id": "re002_b2",
+            "text": "(소리 패턴을 분석한다)",
+            "unlock": { "type": "stat", "stat": "심리_분석", "min": 1 },
+            "result_narrative": "규칙적이지 않다. 발소리라기보단 뭔가 질질 끄는 소리. 물리적인 게 아닐 수도 있다.",
+            "effects": [
+              { "type": "stat_change", "stat": "오컬트_지식", "delta": 1, "recipient": "player_B" }
+            ]
+          },
+          {
+            "choice_id": "re002_b3",
+            "text": "무시하고 빠르게 빠져나간다",
+            "unlock": null,
+            "result_narrative": "빠져나오자 소리가 멈췄다.",
+            "effects": []
+          }
+        ]
+      }
+    },
+    {
+      "encounter_id": "re_003",
+      "title": "지하철 이상 승객",
+      "trigger": {
+        "type": "random",
+        "weight": 1.0,
+        "blacklist_flags": []
+      },
+      "narrative": [
+        "심야 지하철. 승객이 거의 없는 칸.",
+        "한 남자가 혼자 서서 벽을 향해 뭔가를 중얼거리고 있다. 옆에 있던 사람들은 슬그머니 다른 칸으로 이동했다. 아무도 신경 쓰지 않는다."
+      ],
+      "choices_per_player": {
+        "player_A": [
+          {
+            "choice_id": "re003_a1",
+            "text": "(그를 자세히 살핀다)",
+            "unlock": { "type": "stat", "stat": "령안", "min": 1 },
+            "result_narrative": "그의 어깨 위에 뭔가 있다. 형태는 없지만 — 무겁게 눌러 앉아 있다. 그는 모르고 있다.",
+            "effects": [
+              { "type": "stat_change", "stat": "오컬트_지식", "delta": 1, "recipient": "player_A" },
+              { "type": "world_state", "key": "spiritual_activity_level", "delta": 1 }
+            ]
+          },
+          {
+            "choice_id": "re003_a2",
+            "text": "(그가 하는 말을 들어본다)",
+            "unlock": { "type": "stat", "stat": "오컬트_지식", "min": 2 },
+            "result_narrative": "단어들이 들린다. 이름들. 계속 같은 이름을 반복하고 있다. \"… 이수연, 이수연.\"",
+            "effects": [
+              {
+                "type": "give_item",
+                "item": {
+                  "item_id": "name_note_sooyeon",
+                  "name": "이름 메모 (이수연)",
+                  "description": "지하철 승객이 반복하던 이름. 이수연.",
+                  "flags_on_use": ["re003_name_sooyeon_known"]
+                },
+                "recipient": "player_A"
+              }
+            ]
+          },
+          {
+            "choice_id": "re003_a3",
+            "text": "그냥 무시한다",
+            "unlock": null,
+            "result_narrative": "다음 역에서 그는 내렸다. 플랫폼에서도 계속 중얼거리고 있었다.",
+            "effects": []
+          }
+        ],
+        "player_B": [
+          {
+            "choice_id": "re003_b1",
+            "text": "(말을 걸어본다)",
+            "unlock": { "type": "stat", "stat": "교섭력", "min": 1 },
+            "result_narrative": "그가 멈추며 당신을 봤다. 잠시 뭔가 말할 것 같더니 — \"괜찮아요\"라고 했다. 그리고 다시 고개를 돌렸다.",
+            "effects": [
+              { "type": "stat_change", "stat": "교섭력", "delta": 1, "recipient": "player_B" }
+            ]
+          },
+          {
+            "choice_id": "re003_b2",
+            "text": "(행동 패턴을 관찰한다)",
+            "unlock": { "type": "stat", "stat": "심리_분석", "min": 1 },
+            "result_narrative": "반복 행동. 강박적이지만 공격성은 없다. 뭔가에 고착된 상태 — 본인이 통제하는 게 아닌 것처럼 보인다.",
+            "effects": [
+              { "type": "stat_change", "stat": "심리_분석", "delta": 1, "recipient": "player_B" }
+            ]
+          },
+          {
+            "choice_id": "re003_b3",
+            "text": "그냥 무시한다",
+            "unlock": null,
+            "result_narrative": "다음 역에서 그는 내렸다.",
+            "effects": []
+          }
+        ]
+      }
+    }
+  ],
+  "effect_types_reference": {
+    "stat_change": "스탯 수치 증감. recipient: player_A / player_B / both",
+    "give_item": "아이템 지급. recipient: player_A / player_B / shared_or",
+    "world_state": "글로벌 수치 변경. key: spiritual_activity_level 등",
+    "set_flag": "스토리 플래그 설정 (에피소드 트리거 조건에 사용)"
+  },
+  "unlock_types_reference": {
+    "stat": "{ type: 'stat', stat: '스탯명', min: 숫자 }",
+    "item": "{ type: 'item', item_id: '아이템ID' }",
+    "null": "항상 표시 (기본 선택지)"
+  }
+}

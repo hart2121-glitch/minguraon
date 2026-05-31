@@ -1,0 +1,476 @@
+{
+  "episode_id": "ep1",
+  "title": "접선",
+  "trigger_conditions": {
+    "type": "always",
+    "notes": "MVP 첫 에피소드 — 무조건 시작"
+  },
+  "npcs": [
+    {
+      "npc_id": "lee_junhyeok",
+      "name": "이준혁",
+      "role": "조직 연락책"
+    },
+    {
+      "npc_id": "ghost_hong",
+      "name": "홍성민",
+      "role": "고인 (1997년 화재 실종자)"
+    }
+  ],
+  "items_available": [
+    {
+      "item_id": "building_map",
+      "name": "건물 도면",
+      "description": "2층 복도에 호실 7개. 끝 호실(7호실)이 보일러실로 표기되어 있다.",
+      "owner_rule": "player_B"
+    },
+    {
+      "item_id": "witness_statement",
+      "name": "목격자 진술서",
+      "description": "창문 앞 형체, 2층 복도 방향, 오전 2시경.",
+      "owner_rule": "player_B"
+    },
+    {
+      "item_id": "old_lunchbox",
+      "name": "낡은 도시락통",
+      "description": "1997년의 것. 안에 손글씨 메모가 있었다.",
+      "owner_rule": "shared_or"
+    }
+  ],
+  "scenes": [
+    {
+      "scene_id": "scene_1a",
+      "visibility": "player_A",
+      "title": "소집 — A",
+      "narrative": [
+        "오후 11시 22분. 핸드폰에 낯선 번호로 메시지가 왔다.",
+        "\"홍대입구역 2번 출구 앞 편의점. 자정까지.\"",
+        "메시지는 그게 전부였다. 번호를 검색해도 아무것도 나오지 않았다. 무시하려 했지만 — 당신은 늘 이런 것들을 무시하지 못했다. 예감이라는 게 있으니까.",
+        "편의점 앞에 서자, 형광등 빛 아래 한 남자가 캔커피를 들고 당신을 바라보고 있었다."
+      ],
+      "choices": [
+        {
+          "choice_id": "1a_c1",
+          "text": "\"누구세요?\"",
+          "unlock": null,
+          "effects": [],
+          "next_scene": "scene_2"
+        },
+        {
+          "choice_id": "1a_c2",
+          "text": "(그를 먼저 관찰한다)",
+          "unlock": null,
+          "effects": [],
+          "additional_narrative": "30대 초반, 피곤한 눈빛이지만 방어적이지 않다. 손에 메모지를 쥐고 있다. 기다리는 게 익숙한 사람.",
+          "next_scene": "scene_2"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_1b",
+      "visibility": "player_B",
+      "title": "소집 — B",
+      "narrative": [
+        "당신이 그 편의점 앞에 도착한 건 11시 58분이었다.",
+        "연락이 온 건 어제였다. 아는 번호도 아니었다.",
+        "\"할 수 있는 사람을 찾고 있어요. 당신 이야기를 들었습니다.\"",
+        "무슨 이야기? 그 질문에는 답이 없었다. 대신 시간과 장소가 왔다.",
+        "편의점 앞에는 이미 두 사람이 있었다. 한 남자와 당신보다 먼저 온 누군가."
+      ],
+      "choices": [
+        {
+          "choice_id": "1b_c1",
+          "text": "\"저도 연락 받았어요.\"",
+          "unlock": null,
+          "effects": [],
+          "next_scene": "scene_2"
+        },
+        {
+          "choice_id": "1b_c2",
+          "text": "(상황을 먼저 살핀다)",
+          "unlock": null,
+          "effects": [],
+          "additional_narrative": "남자가 손에 든 건 아이스 아메리카노다. 11월 밤에. 기다리는 게 습관이 된 사람의 방식.",
+          "next_scene": "scene_2"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_2",
+      "visibility": "shared",
+      "title": "첫 만남",
+      "wait_for_both": true,
+      "narrative": [
+        "남자가 먼저 입을 열었다.",
+        "\"둘 다 왔네요. 좋아요.\"",
+        "그는 골목 안쪽을 가리켰다.",
+        "\"여기서 오래 서 있으면 좋지 않아요. 안으로.\"",
+        "골목 안, 담배 냄새가 배인 계단 옆에서 그는 처음으로 자신을 소개했다.",
+        "\"이준혁입니다. 조직 이름은 없어요 — 공식적으로는 존재하지 않으니까요. 서울에서 이상한 일들을 처리하는 사람들의 모임이라고 생각하면 됩니다. 느슨하게.\"",
+        "그가 두 사람을 번갈아 봤다.",
+        "\"서로 처음이죠. 앞으로 파트너가 될 겁니다.\""
+      ],
+      "narrative_exclusive": [
+        {
+          "visibility": "player_A",
+          "text": "이준혁의 어깨 뒤로 희미한 잔상이 보인다. 오래된 것들을 많이 다룬 사람 특유의 — 뭔가 묻어 있는 느낌. 위험한 건 아니다. 그냥 오래됐다."
+        },
+        {
+          "visibility": "player_B",
+          "text": "이준혁의 말투는 군더더기가 없다. 설명보다 평가를 하고 있다 — 두 사람의 반응을 보고 있다. 오래 일한 사람의 방식."
+        }
+      ],
+      "narrative_continued": [
+        "\"오늘 밤 건이 하나 있어요. 가볍습니다. 처음이니까.\""
+      ],
+      "choices": [
+        {
+          "choice_id": "2_c1",
+          "text": "\"말씀해 주세요.\"",
+          "unlock": null,
+          "effects": [],
+          "next_scene": "scene_3"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_3",
+      "visibility": "shared",
+      "title": "임무 브리핑",
+      "narrative": [
+        "이준혁이 핸드폰을 꺼내 사진 두 장을 보여줬다.",
+        "합정동 오래된 상가 건물. 4층짜리, 10년째 공실.",
+        "\"어제오늘 신고가 세 건 들어왔어요. 밤에 불 켜진다, 소리 난다, 창문 앞에 사람이 보인다. 주변 주민들이 요즘 예민해서.\"",
+        "그가 핸드폰을 집어넣었다.",
+        "\"들어가서 뭔지 확인하고, 처리하면 됩니다. 건물 관리인한테는 얘기해뒀어요.\""
+      ],
+      "choices_per_player": {
+        "player_A": [
+          {
+            "choice_id": "3_a_c1",
+            "text": "\"어떤 종류인지 알고 계세요?\"",
+            "unlock": null,
+            "effects": [],
+            "npc_response": "\"확인은 못 했어요. 보통 이 동네 건 오래된 거예요. 해결이 안 된 채 남은 것들.\"",
+            "next_scene": "scene_4"
+          },
+          {
+            "choice_id": "3_a_c2",
+            "text": "\"위험한 건 아니겠죠?\"",
+            "unlock": null,
+            "effects": [],
+            "npc_response": "\"처음이라 가벼운 걸로 골랐어요. 보장은 못 하지만.\"",
+            "next_scene": "scene_4"
+          }
+        ],
+        "player_B": [
+          {
+            "choice_id": "3_b_c1",
+            "text": "\"건물 내부 구조 도면 같은 거 있어요?\"",
+            "unlock": null,
+            "effects": [
+              { "type": "give_item", "item_id": "building_map", "recipient": "player_B" }
+            ],
+            "npc_response": "\"빠르네요.\" 핸드폰으로 파일을 전송한다.",
+            "next_scene": "scene_4"
+          },
+          {
+            "choice_id": "3_b_c2",
+            "text": "\"목격자 진술서 구할 수 있어요?\"",
+            "unlock": null,
+            "effects": [
+              { "type": "give_item", "item_id": "witness_statement", "recipient": "player_B" }
+            ],
+            "npc_response": "\"하나는 있어요.\" 종이 한 장을 건넨다.",
+            "next_scene": "scene_4"
+          }
+        ]
+      }
+    },
+    {
+      "scene_id": "scene_4",
+      "visibility": "shared",
+      "title": "건물 진입",
+      "wait_for_both": true,
+      "narrative": [
+        "새벽 1시. 합정동 폐상가 건물 앞.",
+        "녹슨 셔터가 반쯤 올려진 채 고정되어 있었다. 안쪽은 어두웠다. 핸드폰 손전등을 켜자 먼지가 쌓인 복도가 나타났다.",
+        "1층은 예전에 미용실이었던 것 같다. 의자가 쓰러져 있고, 거울 하나가 금이 간 채 벽에 기대어 있다.",
+        "계단이 안쪽에 보인다."
+      ],
+      "choices": [
+        {
+          "choice_id": "4_c1",
+          "text": "1층을 먼저 살핀다",
+          "unlock": null,
+          "effects": [],
+          "additional_narrative": "미용실 기구들. 유통기한 지난 헤어 제품. 특이한 건 없다.",
+          "next_scene": "scene_5"
+        },
+        {
+          "choice_id": "4_c2",
+          "text": "바로 2층으로 올라간다",
+          "unlock": null,
+          "effects": [],
+          "next_scene": "scene_5"
+        },
+        {
+          "choice_id": "4_c3",
+          "text": "(도면을 확인한다)",
+          "unlock": { "type": "item", "item_id": "building_map", "owner": "player_B" },
+          "unlock_note": "B가 건물 도면 보유 시 표시",
+          "effects": [],
+          "additional_narrative": "2층 복도에 호실이 7개. 끝 호실이 7호실 — 보일러실로 표기되어 있다. 3층은 원래 주거용이었던 것 같다.",
+          "next_scene": "scene_5"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_5",
+      "visibility": "split",
+      "title": "협력 퍼즐 — 2층 복도",
+      "narrative_shared_intro": [
+        "2층 복도. 문이 여러 개 늘어선 긴 공간.",
+        "갑자기 공기가 달라진다."
+      ],
+      "narrative_exclusive": [
+        {
+          "visibility": "player_A",
+          "text": [
+            "복도 끝, 7번 문 앞에 형체가 있다.",
+            "남자다. 오래된 작업복 차림. 오른팔이 — 이상하다. 팔꿈치 아래가 흐릿하게 사라져 있다.",
+            "그가 문을 향해 손을 뻗었다가 거두길 반복하고 있다.",
+            "아주 낮은 목소리로 같은 말을 반복하고 있다.",
+            "\"… 아직 못 했어. 아직 못 했어.\""
+          ]
+        },
+        {
+          "visibility": "player_B",
+          "text": [
+            "복도를 걷다 발에 무언가 채였다.",
+            "핸드폰 불빛을 비추자 — 낡은 철제 도시락통이다.",
+            "뚜껑을 열자 안에 종이 한 장이 있다. 손글씨.",
+            "\"7호실 보일러 점검 — 홍성민, 97.11.14\"",
+            "옆에는 날짜가 보이는 신문 조각. 1997년 11월 20일자.",
+            "\"합정동 상가건물 화재, 야간 작업 중이던 보일러 기사 실종. 시신 미발견.\""
+          ]
+        }
+      ],
+      "puzzle": {
+        "puzzle_id": "puzzle_1",
+        "type": "information_exchange",
+        "clues_A": [
+          "7번 문 앞에 형체 존재",
+          "반복 대사: '아직 못 했어'",
+          "오른팔 아래가 흐릿하게 사라져 있음"
+        ],
+        "clues_B": [
+          "이름: 홍성민",
+          "97.11.14 — 7호실 보일러 점검 예정",
+          "97.11.20 — 화재로 실종, 시신 미발견"
+        ],
+        "solution_description": "홍성민은 7호실 점검 전 화재로 사망. 임무 미완성의 집착이 그를 묶어두고 있다. 7호실 문을 열고 그에게 일이 끝났음을 알려야 한다.",
+        "required_actions": [
+          {
+            "actor": "player_A",
+            "action_id": "speak_to_ghost",
+            "description": "형체에게 말을 건다"
+          },
+          {
+            "actor": "player_B",
+            "action_id": "open_door_7",
+            "description": "7번 문을 연다"
+          }
+        ]
+      },
+      "system_prompt": "채팅창을 통해 상대방과 발견한 정보를 공유하세요.",
+      "choices_per_player": {
+        "player_A": [
+          {
+            "choice_id": "5_a_c1",
+            "text": "(홍성민에게 말을 건다) \"홍성민 씨, 7호실은 저희가 확인했어요. 일은 끝났어요.\"",
+            "unlock": null,
+            "effects": [
+              { "type": "set_flag", "flag": "a_spoke_to_ghost", "value": true }
+            ],
+            "additional_narrative_if_stat": {
+              "stat": "령안",
+              "min": 1,
+              "text": "형체가 당신의 목소리를 들었다. 눈이 당신을 향했다 — 처음으로."
+            },
+            "next_scene": "scene_6_check"
+          },
+          {
+            "choice_id": "5_a_c2",
+            "text": "(형체에게 다가가려 한다)",
+            "unlock": null,
+            "effects": [
+              { "type": "set_flag", "flag": "a_approached_incorrectly", "value": true }
+            ],
+            "next_scene": "scene_6c"
+          }
+        ],
+        "player_B": [
+          {
+            "choice_id": "5_b_c1",
+            "text": "7번 문 손잡이를 잡고 연다",
+            "unlock": null,
+            "effects": [
+              { "type": "set_flag", "flag": "b_opened_door_7", "value": true }
+            ],
+            "additional_narrative": "문은 잠겨 있지 않았다. 오래된 보일러 장비들이 먼지를 뒤집어쓰고 있다. 이상한 건 없다.",
+            "additional_narrative_if_stat": {
+              "stat": "탐색력",
+              "min": 1,
+              "text": "보일러 옆 점검 일지를 발견했다. 마지막 항목: 11월 13일까지 기록되어 있고, 14일 칸은 비어 있다."
+            },
+            "next_scene": "scene_6_check"
+          },
+          {
+            "choice_id": "5_b_c2",
+            "text": "(도시락통을 들고 형체에게 보여주려 한다)",
+            "unlock": null,
+            "effects": [
+              { "type": "set_flag", "flag": "b_approached_incorrectly", "value": true }
+            ],
+            "next_scene": "scene_6c"
+          }
+        ]
+      }
+    },
+    {
+      "scene_id": "scene_6_check",
+      "visibility": "server_only",
+      "type": "branch_check",
+      "logic": {
+        "if_both": ["a_spoke_to_ghost", "b_opened_door_7"],
+        "then": "scene_6a",
+        "else_if_one": ["a_spoke_to_ghost", "b_opened_door_7"],
+        "else_partial": "scene_6b",
+        "else": "scene_6c"
+      }
+    },
+    {
+      "scene_id": "scene_6a",
+      "visibility": "shared",
+      "title": "해결 — 완전 성공",
+      "narrative": [
+        "형체가 멈췄다.",
+        "천천히 뒤를 돌아봤다. 얼굴이 있었다 — 그리고 처음으로 오른팔이 또렷하게 보였다.",
+        "홍성민이 7번 문 쪽을 한 번 바라봤다.",
+        "그리고 사라졌다.",
+        "복도가 조용해졌다. 공기가 달라졌다."
+      ],
+      "rewards": {
+        "stats": [
+          { "player": "player_A", "stat": "령안", "delta": 1 },
+          { "player": "player_B", "stat": "탐색력", "delta": 1 }
+        ],
+        "items": [
+          { "item_id": "old_lunchbox", "recipient": "shared_or" }
+        ],
+        "world_state": [
+          { "key": "spiritual_activity_level", "delta": -1 }
+        ]
+      },
+      "next_scene": "scene_7a"
+    },
+    {
+      "scene_id": "scene_6b",
+      "visibility": "shared",
+      "title": "해결 — 부분 성공",
+      "narrative": [
+        "형체가 잠시 멈췄다가 — 다시 반복을 시작했다.",
+        "당신들이 무언가 건드리긴 했지만 충분하지 않았다."
+      ],
+      "rewards": {
+        "stats": [
+          {
+            "condition": "flag:a_spoke_to_ghost",
+            "player": "player_A", "stat": "령안", "delta": 1
+          },
+          {
+            "condition": "flag:b_opened_door_7",
+            "player": "player_B", "stat": "탐색력", "delta": 1
+          }
+        ],
+        "items": [],
+        "world_state": []
+      },
+      "next_scene": "scene_7b"
+    },
+    {
+      "scene_id": "scene_6c",
+      "visibility": "split",
+      "title": "실패",
+      "narrative_exclusive": [
+        {
+          "visibility": "player_A",
+          "text": "형체가 고개를 돌렸다. 눈이 없었다."
+        },
+        {
+          "visibility": "player_B",
+          "text": "갑자기 복도의 문들이 차례로 열리고 닫히기 시작했다. 바람이 없는데."
+        }
+      ],
+      "narrative_shared": [
+        "밖으로 뛰쳐나왔다. 새벽 공기가 폐에 찼다.",
+        "실패했다."
+      ],
+      "rewards": {
+        "stats": [],
+        "items": [],
+        "world_state": []
+      },
+      "next_scene": "game_over"
+    },
+    {
+      "scene_id": "game_over",
+      "visibility": "shared",
+      "type": "game_over",
+      "message": "임무에 실패했습니다.",
+      "options": [
+        {
+          "text": "에피소드 처음부터 다시 시작",
+          "action": "restart_episode",
+          "note": "스탯·아이템은 에피소드 진입 시점으로 복구"
+        }
+      ]
+    },
+    {
+      "scene_id": "scene_7a",
+      "visibility": "shared",
+      "title": "에필로그 — 완전 성공",
+      "narrative": [
+        "새벽 3시. 건물 밖.",
+        "이준혁이 어느새 와 있었다.",
+        "\"어떻게 됐어요?\"",
+        "\"처리했어요.\"",
+        "이준혁이 두 사람을 천천히 봤다. 짧게 고개를 끄덕였다.",
+        "\"잘 했어요.\"",
+        "그가 각자에게 봉투 하나씩을 건넸다.",
+        "\"다음 연락은 제가 할게요. 조심해서 들어가세요.\""
+      ],
+      "next_scene": null,
+      "episode_end": true,
+      "story_flags_set": ["ep1_cleared_success"]
+    },
+    {
+      "scene_id": "scene_7b",
+      "visibility": "shared",
+      "title": "에필로그 — 부분 성공",
+      "narrative": [
+        "새벽 3시. 건물 밖.",
+        "이준혁이 어느새 와 있었다.",
+        "\"어떻게 됐어요?\"",
+        "\"완전히는 아니었어요. 진정시키는 데까지.\"",
+        "이준혁: \"그래요. 처음엔 다들 그래요.\"",
+        "그가 봉투를 건넸다."
+      ],
+      "next_scene": null,
+      "episode_end": true,
+      "story_flags_set": ["ep1_cleared_partial"]
+    }
+  ],
+  "scene_order_note": "scene_1a와 scene_1b는 병렬 진행 (각 플레이어 개별). scene_2부터 두 플레이어가 합류. scene_5는 공간 분리 — 각자 다른 서술을 보며 채팅으로 소통."
+}
