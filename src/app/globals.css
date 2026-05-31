@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-mono: ui-monospace, SFMono-Regular, "Menlo", "Consolas", "D2Coding",
+    "Noto Sans Mono CJK KR", monospace;
+}
+
+html,
+body {
+  background: #0a0a0c;
+  color: #d6d6dd;
+  font-family: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* 스크롤바 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #26262e;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.narrative {
+  white-space: pre-wrap;
+  line-height: 1.9;
+}
