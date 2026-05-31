@@ -10,7 +10,8 @@ import type {
 
 const dev = process.env.NODE_ENV !== "production";
 const port = Number(process.env.PORT) || 3000;
-const hostname = "localhost";
+// 로컬 개발은 localhost, 배포 환경은 모든 인터페이스(0.0.0.0)에 바인딩
+const hostname = process.env.HOST || (dev ? "localhost" : "0.0.0.0");
 
 const app = next({ dev, hostname, port });
 const handle = app.getRequestHandler();
@@ -29,7 +30,7 @@ app.prepare().then(() => {
 
   registerGameHandlers(io);
 
-  httpServer.listen(port, () => {
+  httpServer.listen(port, hostname, () => {
     console.log(`▶ 유천당 서버 가동: http://${hostname}:${port}`);
   });
 });

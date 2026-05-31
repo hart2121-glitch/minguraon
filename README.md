@@ -29,6 +29,32 @@ npm run typecheck                  # 타입 체크
 npx tsx scripts/smoke.ts           # 2인 플레이 종단 테스트 (서버 실행 중이어야 함)
 ```
 
+## 배포 (도메인으로 접속)
+
+이 앱은 **WebSocket 연결을 유지하는 장기 실행 Node 서버**(`server.ts`)다. 정적/서버리스
+호스팅(Vercel, Netlify, Firebase Hosting)으로는 못 띄운다. Node 컨테이너를 상시 구동하고
+WebSocket과 HTTPS 도메인을 지원하는 **Railway**(추천) 또는 **Render**를 쓴다.
+
+> ⚠️ 세션이 **인메모리**(`src/game/sessions.ts`)다. 인스턴스를 1개로만 유지할 것.
+> 오토스케일/다중 레플리카로 늘리면 세션이 인스턴스별로 갈라진다.
+
+### Railway (추천 — 강제 슬립 없음)
+1. GitHub에 푸시 → [railway.app](https://railway.app) → **New Project → Deploy from GitHub repo**
+2. Railway가 자동 감지: Build `npm run build`, Start `npm start`
+3. **Settings → Networking → Generate Domain** 으로 `*.up.railway.app` 도메인 발급
+4. `PORT`는 Railway가 자동 주입(서버가 `process.env.PORT` 사용). 커스텀 도메인은
+   Settings → Networking에서 연결
+
+### Render (무료 가능, 단 무료는 15분 무활동 시 슬립 → 콜드 스타트)
+- 리포지토리에 포함된 `render.yaml`로 Blueprint 배포하거나, 수동 Web Service 생성 시
+  Build `npm install && npm run build`, Start `npm start`, Instances `1`
+
+### 배포 전 체크
+```powershell
+npm run build                      # 프로덕션 빌드 통과 확인 (배포가 이걸 실행)
+$env:NODE_ENV="production"; $env:PORT="3100"; npm start   # 로컬에서 프로덕션 모드 부팅 확인
+```
+
 ## 구조
 
 ```

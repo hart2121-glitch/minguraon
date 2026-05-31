@@ -1,0 +1,15 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# ⚠️ 세션이 인메모리이므로 인스턴스는 반드시 1개여야 한다 (numInstances: 1).
+#    여러 인스턴스로 늘리면 세션이 인스턴스별로 갈라진다.
+services:
+  - type: web
+    name: minguraon
+    runtime: node
+    plan: starter # 무료(free)는 15분 무활동 시 슬립 → 실시간 게임엔 콜드 스타트 발생
+    numInstances: 1
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
