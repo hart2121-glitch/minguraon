@@ -84,7 +84,7 @@ export default function PlayPage() {
             {scene?.title && (
               <h2 className="text-ink-dim text-sm tracking-wider mb-4">{scene.title}</h2>
             )}
-            <p className="narrative text-ink-text">{scene?.text}</p>
+            <p className="narrative text-ink-text whitespace-pre-wrap">{scene?.text}</p>
           </article>
 
           {/* 결말 */}
