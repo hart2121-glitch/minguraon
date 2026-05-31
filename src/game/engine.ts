@@ -1,4 +1,5 @@
 import type {
+  BranchLogic,
   Choice,
   ChoiceView,
   Effect,
@@ -104,9 +105,16 @@ function targetSlots(state: GameState, target: Effect["target"], actor: Slot | n
   return actor != null && state.players[actor] ? [actor] : [];
 }
 
+function conditionMet(state: GameState, e: Effect): boolean {
+  if (!e.condition) return true;
+  const want = e.condition.value ?? true;
+  return state.flags[e.condition.flag] === want;
+}
+
 export function applyEffects(state: GameState, effects: Effect[] | undefined, actor: Slot | null) {
   if (!effects) return;
   for (const e of effects) {
+    if (!conditionMet(state, e)) continue;
     switch (e.type) {
       case "stat": {
         if (!e.stat) break;
@@ -167,22 +175,40 @@ function resolveTarget(target: string): string {
   return target;
 }
 
-function enterScene(state: GameState, sceneId: string) {
+function evalBranch(state: GameState, b: BranchLogic): string {
+  if (b.ifBoth.every((f) => state.flags[f])) return b.then;
+  if (b.elseIfOne.some((f) => state.flags[f])) return b.partial;
+  return b.fallback;
+}
+
+function enterScene(state: GameState, sceneId: string, depth = 0) {
+  if (depth > 50) throw new Error("scene navigation loop");
   const target = resolveTarget(sceneId);
   const scene = getScene(target);
   if (!scene) throw new Error(`unknown scene: ${target}`);
+
+  // 서버 전용 분기 장면: 화면 없이 즉시 다음으로 라우팅
+  if (scene.branch) {
+    enterScene(state, evalBranch(state, scene.branch), depth + 1);
+    return;
+  }
 
   state.currentSceneId = target;
   state.pending = [null, null];
 
   if (scene.checkpoint) state.checkpoint = snapshot(state);
 
-  if (scene.ending) {
-    state.status = "ending";
-  } else if (scene.choices.length === 0) {
-    // 선택지 없는 비-결말 장면 = 게임 오버 연출
+  applyEffects(state, scene.onEnter, null);
+
+  if (scene.gameover) {
     state.status = "gameover";
     state.gameoverReason = scene.title ?? "게임 오버";
+  } else if (scene.ending) {
+    state.status = "ending";
+  } else if (scene.choices.length === 0) {
+    // 선택지도 분기도 없는 장면 = 막다른 길 → 게임 오버로 처리(안전망)
+    state.status = "gameover";
+    state.gameoverReason = scene.title ?? "막다른 길";
   } else {
     state.status = "playing";
   }
@@ -193,10 +219,31 @@ function matchToken(token: string, value: string | null): boolean {
   return token === value;
 }
 
+// 선택 직후 본인에게 보일 결과 서술 (효과 적용 전 스탯 기준)
+function computeResult(state: GameState, slot: Slot, choice: Choice): string | null {
+  let txt = choice.resultNarrative ?? null;
+  if (choice.resultIfStat) {
+    const p = state.players[slot];
+    if (p && p.stats[choice.resultIfStat.stat] >= choice.resultIfStat.min) {
+      txt = txt ? `${txt}\n\n${choice.resultIfStat.text}` : choice.resultIfStat.text;
+    }
+  }
+  return txt;
+}
+
 // "both" 모드 결합 해소
 function resolveBoth(state: GameState, scene: Scene) {
   const c0 = state.pending[0];
   const c1 = state.pending[1];
+
+  // 결과 서술은 효과 적용 전에 계산 (resultIfStat이 직전 스탯을 반영하도록)
+  const results: [string | null, string | null] = [null, null];
+  for (const slot of [0, 1] as Slot[]) {
+    const cid = state.pending[slot];
+    if (!cid) continue;
+    const choice = scene.choices.find((c) => c.id === cid);
+    if (choice) results[slot] = computeResult(state, slot, choice);
+  }
 
   // 제출된 각 선택지의 효과 적용 (actor = 제출한 슬롯)
   for (const slot of [0, 1] as Slot[]) {
@@ -205,6 +252,8 @@ function resolveBoth(state: GameState, scene: Scene) {
     const choice = scene.choices.find((c) => c.id === cid);
     applyEffects(state, choice?.effects, slot);
   }
+
+  state.lastResult = results;
 
   if (scene.resolution) {
     for (const r of scene.resolution) {
@@ -233,6 +282,10 @@ export function submitChoice(state: GameState, slot: Slot, choiceId: string): Su
   const scene = getScene(state.currentSceneId);
   if (!scene) return { ok: false, error: "장면을 찾을 수 없습니다." };
 
+  // 시작 장면은 세션 생성 시 직접 세팅되어 enterScene을 거치지 않으므로,
+  // 체크포인트(에피소드 진입 상태) 스냅샷을 첫 상호작용 시점에 확보한다.
+  if (!state.checkpoint && scene.checkpoint) state.checkpoint = snapshot(state);
+
   if (!submittableIds(state, slot, scene).has(choiceId)) {
     return { ok: false, error: "선택할 수 없는 항목입니다." };
   }
@@ -241,7 +294,9 @@ export function submitChoice(state: GameState, slot: Slot, choiceId: string): Su
 
   if (scene.mode === "either") {
     const choice = scene.choices.find((c) => c.id === choiceId)!;
+    const result = computeResult(state, slot, choice);
     applyEffects(state, choice.effects, slot);
+    state.lastResult = slot === 0 ? [result, null] : [null, result];
     enterScene(state, choice.goto ?? scene.defaultGoto ?? state.currentSceneId);
     return { ok: true };
   }
@@ -264,21 +319,25 @@ export function restartFromCheckpoint(state: GameState): SubmitResult {
     state.gameoverReason = undefined;
     state.currentSceneId = cp.currentSceneId;
     state.status = "playing";
+    state.lastResult = undefined;
   } else {
     state.currentSceneId = START_SCENE_ID;
     state.status = "playing";
     state.pending = [null, null];
     state.gameoverReason = undefined;
+    state.lastResult = undefined;
   }
   return { ok: true };
 }
 
 // ───────────────────────── 슬롯별 뷰 투영 ─────────────────────────
 
-function composeText(scene: Scene, slot: Slot): string {
+function composeText(state: GameState, scene: Scene, slot: Slot): string {
   const parts: string[] = [];
+  const result = state.lastResult?.[slot];
+  if (result) parts.push(`» ${result}\n\n────────`);
   if (scene.text.shared) parts.push(scene.text.shared);
-  if (scene.text.perSlot) parts.push(scene.text.perSlot[slot]);
+  if (scene.text.perSlot && scene.text.perSlot[slot]) parts.push(scene.text.perSlot[slot]);
   return parts.join("\n\n");
 }
 
@@ -316,7 +375,7 @@ export function projectView(state: GameState, slot: Slot): PlayerView {
     sceneView = {
       id: scene.id,
       title: scene.title,
-      text: composeText(scene, slot),
+      text: composeText(state, scene, slot),
       choices,
       mode: scene.mode,
       youSubmitted,

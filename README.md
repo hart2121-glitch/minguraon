@@ -40,13 +40,25 @@ src/
     sessions.ts           인메모리 세션 스토어 (생성/참가/재접속/일시정지/채팅)
   server/socket.ts        Socket.IO 핸들러
   shared/events.ts        소켓 이벤트 계약
-  content/
-    stats.ts items.ts     능력치 · 아이템 정의
-    episodes/ep1.ts       에피소드 1 「유천당 입문」 + 랜덤 인카운터
+  content/                ★ 콘텐츠는 모두 여기서 관리
+    index.ts              레지스트리: 어댑터 결과 + 허브를 모아 장면/아이템/시작점 조립
+    adapter.ts            콘텐츠 JSON → 엔진 Scene[] 변환 (한글 스탯명·분기·퍼즐·보상 흡수)
+    hub.ts                거점/후일담 등 코드 정의 연결 장면
+    stats.ts              능력치 정의 (행동 3 / 감각·지식 3)
+    data/
+      episodes/ep1.json   에피소드 1 「접선」 (+ 시나리오 md)
+      encounters/random.json  랜덤 인카운터 (+ 시나리오 md)
   lib/                    클라이언트 소켓 훅 · 신원(localStorage)
   components/             SidePanel · Chat
   app/                    로비(/) · 게임 화면(/play/[code])
 ```
+
+### 콘텐츠 추가 방법
+새 에피소드/인카운터는 `src/content/data/` 아래 JSON으로 작성하고 `content/index.ts`에
+한 줄 등록하면 어댑터가 엔진 형식으로 변환합니다. 엔진/서버 코드는 건드릴 필요가 없습니다.
+어댑터가 흡수하는 JSON 기능: `visibility`(player_A/B/shared/split/server_only),
+`branch_check`(플래그 분기), `puzzle`(정보교환), `rewards`(진입 보상), 병렬 도입부 병합,
+선택 후 결과 서술, 한글 스탯명.
 
 ## 현재 구현 범위 (MVP)
 
@@ -54,9 +66,10 @@ src/
 - 슬롯별 비대칭 서술/선택지 (비밀 정보는 서버에서만 보유, 클라이언트로 누출 없음)
 - `both` 모드(둘 다 제출해야 진행) + `either` 모드(아무나 진행)
 - 능력치(행동 3 / 감각·지식 3) · 아이템(개인 소유, 스탯과 독립, OR 조건 해금)
-- 정보 교환형 협력 퍼즐 (305호)
+- 정보 교환형 협력 퍼즐 (합정동 폐상가 2층 — 공간 분리 split)
+- 서버 전용 분기 판정(branch_check): 완전 성공 / 부분 성공 / 실패
 - 랜덤 인카운터 3종 · 심령 활동 수위(글로벌 수치, 구조만)
-- 게임 오버 → 체크포인트(거점)에서 재시작
+- 게임 오버 → 에피소드 진입 체크포인트에서 재시작 (스탯·아이템 복구)
 - 접속 종료 시 일시정지, 재접속 시 같은 슬롯으로 복귀, 채팅
 
 미구현(이후 확장): 피날레/엔딩 분기, 에피소드 2+, 영속 저장(현재 인메모리).

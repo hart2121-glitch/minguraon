@@ -60,6 +60,8 @@ export interface Effect {
   flag?: string;
   value?: FlagVal;
   reason?: string; // gameover 사유
+  // 조건부 효과: 이 플래그가 일치할 때만 적용 (value 생략 시 truthy 검사)
+  condition?: { flag: string; value?: FlagVal };
 }
 
 export type ChoiceVisibility = Slot | "both";
@@ -71,7 +73,11 @@ export interface Choice {
   requires?: Requirement; // 미충족 시 숨김 (lockedHint 있으면 잠금 표시)
   lockedHint?: string;
   effects?: Effect[];
-  goto?: string; // "either" 모드 전용. "both" 모드에서는 resolution이 결정.
+  goto?: string; // "either" 모드 전용. "both" 모드에서는 resolution/defaultGoto가 결정.
+  // 선택 직후 본인에게만 보이는 결과 서술. 다음 장면 상단에 표시됨.
+  resultNarrative?: string;
+  // 스탯 조건 충족 시 추가로 붙는 결과 서술.
+  resultIfStat?: { stat: StatKey; min: number; text: string };
 }
 
 export interface SceneText {
@@ -88,6 +94,15 @@ export interface CoopResolution {
   effects?: Effect[];
 }
 
+// 서버 전용 분기 장면 — UI 없이 플래그로 즉시 라우팅.
+export interface BranchLogic {
+  ifBoth: string[]; // 모든 플래그 truthy → then
+  then: string;
+  elseIfOne: string[]; // 위가 아니고, 이 중 하나라도 truthy → partial
+  partial: string;
+  fallback: string; // 그 외
+}
+
 export interface Scene {
   id: string;
   title?: string;
@@ -95,9 +110,12 @@ export interface Scene {
   choices: Choice[];
   mode: SceneMode; // either: 한 명의 선택으로 진행 / both: 둘 다 제출해야 진행
   resolution?: CoopResolution[]; // both 모드 결합 규칙
-  defaultGoto?: string; // both 모드에서 매칭 실패 시
+  defaultGoto?: string; // both 모드 네비게이션 / 매칭 실패 시
+  onEnter?: Effect[]; // 장면 진입 시 적용되는 효과 (보상 등)
+  branch?: BranchLogic; // 서버 전용 분기 장면 (즉시 라우팅, 화면 없음)
   checkpoint?: boolean; // 진입 시 체크포인트 저장 (게임오버 복귀 지점)
   ending?: boolean; // 종료 장면
+  gameover?: boolean; // 게임 오버 장면 (재시작 UI 노출)
 }
 
 export type GameStatus = "playing" | "paused" | "gameover" | "ending";
@@ -128,6 +146,7 @@ export interface GameState {
   chat: ChatMessage[];
   gameoverReason?: string;
   checkpoint?: StateSnapshot; // 게임오버 시 복원
+  lastResult?: [string | null, string | null]; // 직전 선택의 슬롯별 결과 서술
 }
 
 // ===== 클라이언트로 전송되는 슬롯별 뷰 (비밀 정보 누출 방지) =====
