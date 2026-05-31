@@ -2,10 +2,17 @@
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGameSocket } from "@/lib/useGameSocket";
 import { SidePanel } from "@/components/SidePanel";
 import { Chat } from "@/components/Chat";
+
+interface HistoryEntry {
+  key: number;
+  sceneId: string;
+  title?: string;
+  text: string;
+}
 
 export default function PlayPage() {
   const params = useParams<{ code: string }>();
@@ -13,6 +20,41 @@ export default function PlayPage() {
   const { connected, view, slot, joinError, actionError, submit, restart, sendChat } =
     useGameSocket(code);
   const [copied, setCopied] = useState(false);
+
+  // 지나온 장면을 누적해서 위로 스크롤하면 이전 내용을 볼 수 있게 한다.
+  // 같은 장면이 여러 번 전송돼도(채팅·대기 상태 토글 등) 중복 추가하지 않는다.
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
+  const lastSceneRef = useRef<{ id: string; text: string } | null>(null);
+  const keyRef = useRef(0);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const lastEntryRef = useRef<HTMLDivElement | null>(null);
+
+  const scene = view?.scene ?? null;
+  const sceneId = scene?.id ?? null;
+  const sceneText = scene?.text ?? "";
+
+  // 새 장면(또는 같은 장면이라도 결과 서술이 바뀐 경우)만 히스토리에 추가
+  useEffect(() => {
+    if (!sceneId) return;
+    const last = lastSceneRef.current;
+    if (last && last.id === sceneId && last.text === sceneText) return;
+    lastSceneRef.current = { id: sceneId, text: sceneText };
+    setHistory((prev) => {
+      // 같은 장면의 텍스트 갱신이면 마지막 항목을 교체, 아니면 새로 append
+      if (prev.length > 0 && prev[prev.length - 1].sceneId === sceneId) {
+        const next = prev.slice(0, -1);
+        next.push({ ...prev[prev.length - 1], title: scene?.title, text: sceneText });
+        return next;
+      }
+      keyRef.current += 1;
+      return [...prev, { key: keyRef.current, sceneId, title: scene?.title, text: sceneText }];
+    });
+  }, [sceneId, sceneText, scene?.title]);
+
+  // 새 장면 진입 시 그 시작 부분이 보이도록 스크롤 (이전 내용은 위로 올려 확인 가능)
+  useEffect(() => {
+    lastEntryRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }, [history.length]);
 
   function copyCode() {
     navigator.clipboard?.writeText(code);
@@ -43,8 +85,8 @@ export default function PlayPage() {
     );
   }
 
-  const scene = view.scene;
   const waiting = scene?.waitingForPartner ?? false;
+  const partnerWaiting = scene?.partnerWaiting ?? false;
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">
@@ -109,16 +151,28 @@ export default function PlayPage() {
             </div>
           )}
 
-          {/* 장면 메타 */}
-          {scene?.title && (
-            <div className="flex-shrink-0 px-[26px] pt-[18px] font-mono text-[11px] tracking-[0.22em] uppercase text-ink-dim">
-              {scene.title}
-            </div>
-          )}
-
-          {/* 내러티브 */}
-          <div className="flex-1 overflow-y-auto px-[26px] pt-3.5 pb-10 min-h-0">
-            <div className="narrative whitespace-pre-wrap">{scene?.text}</div>
+          {/* 내러티브 — 지나온 장면 누적. 위로 스크롤하면 이전 내용 확인 가능 */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto px-[26px] pt-3.5 pb-10 min-h-0">
+            {history.map((entry, i) => (
+              <div
+                key={entry.key}
+                ref={i === history.length - 1 ? lastEntryRef : undefined}
+                className={i > 0 ? "mt-8 pt-8 border-t border-ink-border/50" : ""}
+              >
+                {entry.title && (
+                  <div className="mb-3 font-mono text-[11px] tracking-[0.22em] uppercase text-ink-dim">
+                    {entry.title}
+                  </div>
+                )}
+                <div
+                  className={`narrative whitespace-pre-wrap ${
+                    i < history.length - 1 ? "text-ink-dim" : ""
+                  }`}
+                >
+                  {entry.text}
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* 결말 */}
@@ -167,6 +221,11 @@ export default function PlayPage() {
                 </p>
               ) : (
                 <>
+                  {partnerWaiting && (
+                    <p className="font-mono text-[11px] tracking-[0.1em] text-ink-spirit mb-3 animate-blink">
+                      파트너가 선택을 마치고 당신을 기다리고 있습니다…
+                    </p>
+                  )}
                   <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-ink-dim mb-3">
                     행동을 선택하시오 — 되돌릴 수 없음
                   </p>
@@ -179,7 +238,20 @@ export default function PlayPage() {
                     >
                       <span className="idx">{String.fromCharCode(65 + idx)}</span>
                       <span className="txt">
-                        {c.label}
+                        {c.stats && c.stats.length > 0 && (
+                          <span className="mr-1.5 font-mono text-[11px] tracking-[0.04em]">
+                            {c.stats.map((st, i) => (
+                              <span
+                                key={st.key}
+                                className={st.met ? "text-ink-spirit" : "text-ink-warn"}
+                              >
+                                {i > 0 && " "}
+                                {st.name}
+                              </span>
+                            ))}
+                          </span>
+                        )}
+                        <span className={c.locked ? "text-ink-dim" : ""}>{c.label}</span>
                         {c.locked && c.lockedHint && (
                           <span className="sub">{c.lockedHint}</span>
                         )}

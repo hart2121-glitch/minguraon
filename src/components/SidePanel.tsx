@@ -136,26 +136,29 @@ function PanelHeader({ label }: { label: string }) {
   );
 }
 
-function StatRow({ s }: { s: StatView }) {
-  const filled = Math.min(s.value, 5);
-  const isSpirit = s.key === "spiritSight";
+function StatChip({ s }: { s: StatView }) {
+  const trained = s.value > 0;
+  const isSense = s.kind === "sense";
   return (
-    <div className="flex items-center gap-3 py-[5px]">
-      <span className="text-sm text-ink-text w-16 shrink-0">{s.name}</span>
-      <span className="flex gap-1 flex-1">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <i
-            key={i}
-            className={`w-3.5 h-[5px] rounded-[1px] ${
-              i < filled
-                ? isSpirit ? "bg-ink-spirit" : "bg-ink-soft"
-                : "bg-ink-border"
-            }`}
-          />
-        ))}
+    <div
+      title={`${s.name} · ${s.kind === "sense" ? "감각/지식" : "행동"}`}
+      className={`flex flex-col gap-0.5 rounded-[3px] border px-2 py-1.5 ${
+        trained ? "border-ink-border bg-ink-bg/40" : "border-ink-border/40 bg-transparent"
+      }`}
+    >
+      <span
+        className={`text-[12px] leading-tight truncate ${
+          trained ? (isSense ? "text-ink-spirit" : "text-ink-text") : "text-ink-dim"
+        }`}
+      >
+        {s.name}
       </span>
-      <span className="font-mono text-[11px] text-ink-dim w-[34px] text-right">
-        {s.value}/5
+      <span
+        className={`font-mono text-[11px] leading-none ${
+          trained ? "text-ink-soft" : "text-ink-dim/60"
+        }`}
+      >
+        Lv.{s.value}
       </span>
     </div>
   );
@@ -176,9 +179,6 @@ export function SidePanel({
   partnerName: string | null;
   partnerConnected: boolean;
 }) {
-  const action = stats.filter((s) => s.kind === "action");
-  const sense  = stats.filter((s) => s.kind === "sense");
-
   return (
     <aside className="order-[-1] flex flex-col min-h-0 bg-ink-panel border-r border-ink-border overflow-y-auto p-5">
       {/* 플레이어 / 파트너 */}
@@ -196,16 +196,13 @@ export function SidePanel({
         </div>
       </div>
 
-      {/* 스탯 */}
+      {/* 능력치 — 스크롤 가능한 3열 격자 */}
       <div className="mb-5">
-        <PanelHeader label="스탯" />
-        <div className="mb-4">
-          <div className="font-serif text-[13px] tracking-[0.18em] text-ink-soft mb-2">행동</div>
-          {action.map((s) => <StatRow key={s.key} s={s} />)}
-        </div>
-        <div>
-          <div className="font-serif text-[13px] tracking-[0.18em] text-ink-soft mb-2">감각</div>
-          {sense.map((s) => <StatRow key={s.key} s={s} />)}
+        <PanelHeader label="능력치" />
+        <div className="max-h-[208px] overflow-y-auto pr-0.5">
+          <div className="grid grid-cols-3 gap-1.5">
+            {stats.map((s) => <StatChip key={s.key} s={s} />)}
+          </div>
         </div>
       </div>
 

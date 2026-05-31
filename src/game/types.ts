@@ -4,12 +4,20 @@ export type Slot = 0 | 1;
 
 // 능력치: 행동 스탯(공통 성장) + 감각/지식 스탯(루팅 분화)
 export type StatKey =
+  // 행동 스탯
   | "combat" // 전투력
   | "investigation" // 탐색력
   | "negotiation" // 교섭력
+  | "agility" // 민첩
+  | "strength" // 근력
+  | "hacking" // 해킹
+  | "deception" // 거짓말
+  // 감각/지식 스탯
   | "spiritSight" // 령안
   | "occultLore" // 오컬트 지식
-  | "psychology"; // 심리 분석
+  | "psychology" // 심리 분석
+  | "intuition" // 직감
+  | "medical"; // 응급처치
 
 export type StatKind = "action" | "sense";
 
@@ -157,11 +165,20 @@ export interface ItemView {
   desc: string;
 }
 
+// 선택지 해금에 관여하는 스탯 요구조건 1건 (UI 색상 표시용)
+export interface ChoiceStatReq {
+  key: StatKey;
+  name: string; // 한글 스탯명
+  need: number; // 요구 수치
+  met: boolean; // 보는 플레이어가 충족했는지
+}
+
 export interface ChoiceView {
   id: string;
   label: string;
   locked: boolean;
   lockedHint?: string;
+  stats?: ChoiceStatReq[]; // 이 선택지가 요구하는 스탯들 (있으면 색칠해 표시)
 }
 
 export interface StatView {
@@ -178,7 +195,8 @@ export interface SceneView {
   choices: ChoiceView[]; // 이 슬롯에게 보이는 선택지만
   mode: SceneMode;
   youSubmitted: boolean;
-  waitingForPartner: boolean;
+  waitingForPartner: boolean; // 내가 제출했고 파트너를 기다리는 중
+  partnerWaiting: boolean; // 파트너가 먼저 제출했고 내 선택을 기다리는 중
   ending: boolean;
 }
 

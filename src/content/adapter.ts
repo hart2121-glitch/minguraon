@@ -18,9 +18,15 @@ const STAT_MAP: Record<string, StatKey> = {
   전투력: "combat",
   탐색력: "investigation",
   교섭력: "negotiation",
+  민첩: "agility",
+  근력: "strength",
+  해킹: "hacking",
+  거짓말: "deception",
   령안: "spiritSight",
   오컬트지식: "occultLore",
   심리분석: "psychology",
+  직감: "intuition",
+  응급처치: "medical",
 };
 
 function statKey(name: string): StatKey {
@@ -248,7 +254,8 @@ function convScene(ctx: Ctx, s: any): Scene {
         label: s.episode_end ? "유천당으로 돌아간다" : "계속 ▸",
         goto: target,
       });
-      mode = "either";
+      // 단순 "계속" 장면도 둘 다 눌러야 진행 — 혼자 진행 불가 원칙(PRD §7)
+      mode = "both";
       defaultGoto = target;
     }
   }

@@ -1,6 +1,7 @@
 import type {
   BranchLogic,
   Choice,
+  ChoiceStatReq,
   ChoiceView,
   Effect,
   GameState,
@@ -8,6 +9,7 @@ import type {
   Requirement,
   Scene,
   Slot,
+  StatKey,
   StateSnapshot,
   StatView,
 } from "./types";
@@ -71,7 +73,9 @@ function visibleChoicesFor(state: GameState, slot: Slot, scene: Scene): VisibleC
     if (c.slot !== slot && c.slot !== "both") continue;
     const met = meetsRequirement(state, slot, c.requires);
     if (met) out.push({ choice: c, locked: false });
-    else if (c.lockedHint) out.push({ choice: c, locked: true });
+    // 미충족: lockedHint가 있거나 스탯 요구조건이 있으면 잠금 상태로 노출
+    // (스탯 게이팅은 어떤 능력치가 막고 있는지 빨간색으로 보여주기 위해 숨기지 않는다)
+    else if (c.lockedHint || c.requires?.stats) out.push({ choice: c, locked: true });
   }
   return out;
 }
@@ -359,18 +363,40 @@ export function projectView(state: GameState, slot: Slot): PlayerView {
   let sceneView: PlayerView["scene"] = null;
   if (scene) {
     const vis = visibleChoicesFor(state, slot, scene);
-    const choices: ChoiceView[] = vis.map((v) => ({
-      id: v.choice.id,
-      label: v.choice.label,
-      locked: v.locked,
-      lockedHint: v.locked ? v.choice.lockedHint : undefined,
-    }));
+    const choices: ChoiceView[] = vis.map((v) => {
+      const reqStats = v.choice.requires?.stats;
+      let stats: ChoiceStatReq[] | undefined;
+      if (reqStats) {
+        stats = Object.entries(reqStats).map(([k, need]) => {
+          const key = k as StatKey;
+          return {
+            key,
+            name: STAT_BY_KEY[key]?.name ?? key,
+            need: need as number,
+            met: (me?.stats[key] ?? 0) >= (need as number),
+          };
+        });
+      }
+      return {
+        id: v.choice.id,
+        label: v.choice.label,
+        locked: v.locked,
+        lockedHint: v.locked ? v.choice.lockedHint : undefined,
+        stats,
+      };
+    });
     const required = requiredSubmitters(state, scene);
     const youSubmitted = state.pending[slot] != null;
     const waitingForPartner =
       scene.mode === "both" &&
       youSubmitted &&
       required.some((s) => s !== slot && state.pending[s] == null);
+    // 파트너가 먼저 제출했고, 내가 아직 안 골랐으며, 내 제출이 필요한 상태
+    const partnerWaiting =
+      scene.mode === "both" &&
+      !youSubmitted &&
+      required.includes(slot) &&
+      required.some((s) => s !== slot && state.pending[s] != null);
 
     sceneView = {
       id: scene.id,
@@ -380,6 +406,7 @@ export function projectView(state: GameState, slot: Slot): PlayerView {
       mode: scene.mode,
       youSubmitted,
       waitingForPartner,
+      partnerWaiting,
       ending: !!scene.ending,
     };
   }
