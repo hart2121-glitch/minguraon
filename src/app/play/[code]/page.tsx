@@ -56,7 +56,7 @@ export default function PlayPage() {
             href="/"
             className="font-display font-extrabold text-[22px] tracking-[0.14em] text-ink-text hover:text-ink-soft transition-colors"
           >
-            밍구라온
+            령안
           </Link>
           {scene?.title && (
             <span className="font-mono text-[11px] tracking-[0.16em] uppercase text-ink-dim pl-3.5 border-l border-ink-border">

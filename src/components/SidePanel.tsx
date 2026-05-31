@@ -25,12 +25,13 @@ function SpiritGauge({ level }: { level: number }) {
     const s = stateRef.current;
     s.target = targetVal;
 
+    const el = canvas;
     function resize() {
       const dpr = window.devicePixelRatio || 1;
-      const W = canvas.clientWidth;
-      const H = canvas.clientHeight;
-      canvas.width = W * dpr;
-      canvas.height = H * dpr;
+      const W = el.clientWidth;
+      const H = el.clientHeight;
+      el.width = W * dpr;
+      el.height = H * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
@@ -57,7 +58,7 @@ function SpiritGauge({ level }: { level: number }) {
       const tremor = (Math.sin(s.t * 7) + (Math.random() - 0.5) * 0.6) * 0.012;
       const v = Math.max(0, Math.min(1, s.val + tremor));
 
-      const W = canvas.clientWidth, H = canvas.clientHeight;
+      const W = el.clientWidth, H = el.clientHeight;
       const cx = W / 2, cy = H * 0.92, R = Math.min(W * 0.42, H * 0.82);
 
       ctx.clearRect(0, 0, W, H);

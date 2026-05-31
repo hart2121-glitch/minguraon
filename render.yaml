@@ -3,7 +3,7 @@
 #    여러 인스턴스로 늘리면 세션이 인스턴스별로 갈라진다.
 services:
   - type: web
-    name: minguraon
+    name: ryeongan
     runtime: node
     plan: starter # 무료(free)는 15분 무활동 시 슬립 → 실시간 게임엔 콜드 스타트 발생
     numInstances: 1

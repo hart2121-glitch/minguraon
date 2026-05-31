@@ -31,6 +31,6 @@ app.prepare().then(() => {
   registerGameHandlers(io);
 
   httpServer.listen(port, hostname, () => {
-    console.log(`▶ 유천당 서버 가동: http://${hostname}:${port}`);
+    console.log(`▶ 령안 서버 가동: http://${hostname}:${port}`);
   });
 });

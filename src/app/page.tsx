@@ -42,7 +42,7 @@ export default function Lobby() {
 
         <div className="text-center mb-10">
           <h1 className="font-display font-extrabold text-[38px] tracking-[0.18em] text-ink-text mb-4">
-            밍구라온
+            령안
           </h1>
           <p className="font-serif text-sm text-ink-soft leading-relaxed">
             둘이 함께 보는 것이 다르다.
